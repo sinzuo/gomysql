@@ -7,18 +7,14 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-/*
-CREATE TABLE `userinfo` (
-    `uid` INT(10) NOT NULL AUTO_INCREMENT,
-    `username` VARCHAR(64)  DEFAULT NULL,
-    `password` VARCHAR(32)  DEFAULT NULL,
-    `department` VARCHAR(64)  DEFAULT NULL,
-    `email` varchar(64) DEFAULT NULL,
-    PRIMARY KEY (`uid`)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8
-*/
-
 var Db *sqlx.DB
+
+type stu struct {
+	Username   string `db:"username"`
+	Password   string `db:"password"`
+	Department string `db:"department"`
+	Email      string `db:"email"`
+}
 
 func init() {
 	db, err := sqlx.Open("mysql", "root:jiangyibo@tcp(127.0.0.1:4306)/mytest?charset=utf8")
@@ -30,28 +26,17 @@ func init() {
 }
 
 func main() {
-	result, err := Db.Exec("INSERT INTO userinfo (username, password, department,email) VALUES (?, ?, ?,?)", "wd", "123", "it", "wd@163.com")
+	rows, err := Db.Queryx("SELECT username,password,email FROM userinfo")
 	if err != nil {
-		fmt.Println("insert failed,error： ", err)
+		fmt.Println("Qeryx failed,error： ", err)
 		return
 	}
-	id, _ := result.LastInsertId()
-	fmt.Println("insert id is :", id)
-	_, err1 := Db.Exec("update userinfo set username = ? where uid = ?", "jack", 1)
-	if err1 != nil {
-		fmt.Println("update failed error:", err1)
-	} else {
-		fmt.Println("update success!")
+	for rows.Next() { //循环结果
+		var stu1 stu
+		err = rows.StructScan(&stu1) // 转换为结构体
+		fmt.Println("stuct data：", stu1.Username, stu1.Password)
 	}
-	_, err2 := Db.Exec("delete from userinfo where uid = ? ", 1)
-	if err2 != nil {
-		fmt.Println("delete error:", err2)
-	} else {
-		fmt.Println("delete success")
-	}
-
 }
 
-//insert id is : 1
-//update success!
-//delete success
+//stuct data： wd 123
+//stuct data： jack 1222
