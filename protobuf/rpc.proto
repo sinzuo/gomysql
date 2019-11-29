@@ -1,0 +1,5 @@
+syntax = "proto3";
+package go_protoc;
+message String {
+    string value = 1;
+}

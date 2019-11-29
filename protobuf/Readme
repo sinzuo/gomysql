@@ -1,0 +1,8 @@
+protoc --go_out=plugins=grpc:. grpc.proto
+protoc --go_out=. rpc.proto
+go build rpcclient.go rpc.pb.go
+go build rpcserver.go rpc.pb.go
+
+go build grpcclient.go grpc.pb.go
+go build grpcserver.go grpc.pb.go
+
